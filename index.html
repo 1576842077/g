@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站已关闭</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+        body {
+            min-height: 100vh;
+            background-color: #1f2937;
+            color: #f3f4f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .box {
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: #ef4444;
+            margin-bottom: 16px;
+        }
+        p {
+            font-size: 1.05rem;
+            color: #d1d5db;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        button {
+            padding: 14px 32px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>该网站已关闭</h1>
+        <p>原站点已经停止运营，请前往我们的新站点继续访问。</p>
+        <button onclick="goNewSite()">前往新页面</button>
+    </div>
+
+    <script>
+        function goNewSite() {
+            window.location.href = "https://fuyueweb.pages.dev";
+        }
+    </script>
+</body>
+</html>
