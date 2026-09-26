@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>平板电脑租借 用户须知</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23409eff'/%3E%3Crect x='14' y='10' width='36' height='44' rx='4' fill='white'/%3E%3Ccircle cx='32' cy='48' r='2' fill='%23409eff'/%3E%3C/svg%3E">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            padding: 20px 16px;
+            color: #333;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #409eff;
+        }
+
+        /* ===== 计时显示区 ===== */
+        .timer-card {
+            background: linear-gradient(135deg, #409eff 0%, #337ecc 100%);
+            border-radius: 14px;
+            padding: 28px 20px;
+            text-align: center;
+            color: #fff;
+            margin: 20px 0;
+            box-shadow: 0 6px 18px rgba(64, 158, 255, 0.3);
+        }
+
+        .timer-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .timer-display {
+            font-size: 52px;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+            line-height: 1.2;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .timer-status {
+            margin-top: 10px;
+            font-size: 14px;
+            opacity: 0.95;
+            display: inline-block;
+            padding: 4px 14px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+        }
+
+        .timer-status.running {
+            background: rgba(82, 196, 26, 0.85);
+        }
+
+        .timer-status.paused {
+            background: rgba(250, 173, 20, 0.85);
+        }
+
+        .cost-display {
+            margin-top: 14px;
+            font-size: 16px;
+            opacity: 0.95;
+        }
+
+        .cost-display strong {
+            font-size: 22px;
+            margin: 0 4px;
+        }
+
+        /* ===== 价格卡片 ===== */
+        .price-box {
+            background: #ecf5ff;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 16px 0;
+            border-left: 4px solid #409eff;
+        }
+
+        .price-box h3 {
+            color: #409eff;
+            margin-bottom: 10px;
+            font-size: 17px;
+        }
+
+        .price-box p {
+            font-size: 15px;
+            margin: 4px 0;
+        }
+
+        /* ===== 折叠条款 ===== */
+        .notice-item {
+            margin: 12px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #eee;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .notice-item:hover {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .notice-header {
+            padding: 14px 18px;
+            background: #fafafa;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .notice-content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.3s ease;
+        }
+
+        .notice-content.show {
+            padding: 14px 18px;
+            max-height: 600px;
+        }
+
+        .notice-content ul {
+            padding-left: 20px;
+        }
+
+        .notice-content li {
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .tip {
+            margin-top: 20px;
+            padding: 14px;
+            background: #fff7e6;
+            border-radius: 10px;
+            color: #c26200;
+            font-size: 14px;
+        }
+
+        /* ===== 管理员入口 ===== */
+        .admin-entry {
+            margin-top: 28px;
+            text-align: center;
+        }
+
+        .admin-entry button {
+            background: none;
+            border: none;
+            color: #bbb;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 12px 20px;
+            min-width: 88px;
+            min-height: 44px;
+        }
+
+        .admin-entry button:active {
+            color: #888;
+        }
+
+        /* ===== 管理员面板 ===== */
+        .admin-panel {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #2c3e50;
+            border-radius: 12px;
+            color: #ecf0f1;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-panel h3 {
+            margin-bottom: 14px;
+            font-size: 16px;
+            color: #3498db;
+        }
+
+        .admin-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-btns button {
+            flex: 1;
+            min-width: 90px;
+            padding: 12px 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.2s;
+        }
+
+        .admin-btns button:active {
+            transform: scale(0.96);
+        }
+
+        .btn-start { background: #27ae60; color: #fff; }
+        .btn-pause { background: #f39c12; color: #fff; }
+        .btn-reset { background: #e74c3c; color: #fff; }
+        .btn-close { background: #7f8c8d; color: #fff; }
+
+        .admin-tip {
+            margin-top: 12px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* 密码弹窗 */
+        .pwd-mask {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .pwd-mask.show {
+            display: flex;
+        }
+
+        .pwd-box {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .pwd-box h4 {
+            margin-bottom: 14px;
+            font-size: 16px;
+        }
+
+        .pwd-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .pwd-box input:focus {
+            border-color: #409eff;
+        }
+
+        .pwd-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pwd-btns button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .pwd-err {
+            color: #e74c3c;
+            font-size: 13px;
+            margin-top: 6px;
+            min-height: 18px;
+        }
+
+        @media (max-width: 480px) {
+            .timer-display { font-size: 42px; }
+            .container { padding: 22px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>平板电脑租借 用户须知</h1>
+
+        <!-- 计时显示 -->
+        <div class="timer-card">
+            <div class="timer-label">本次使用时长</div>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="timer-status paused" id="timerStatus">已暂停</div>
+            <div class="cost-display">当前费用：<strong id="costDisplay">0.00</strong> 元</div>
+        </div>
+
+        <!-- 收费标准 -->
+        <div class="price-box">
+            <h3>租借收费标准</h3>
+            <p>按时计费：<strong>0.5 元 / 小时</strong></p>
+            <p>按天计费：<strong>2 元 / 天</strong></p>
+            <p>计费说明：不足 1 小时按 1 小时计算；单日费用最高封顶 2 元。</p>
+        </div>
+
+        <!-- 折叠条款 -->
+        <div class="notice-item">
+            <div class="notice-header" onclick="toggleNotice(this)">
+                <span>一、设备使用规范</span>
+                <span class="icon">▼</span>
+            </div>
+            <div class="notice-content">
+                <ul>
+                    <li>租借设备仅限正常学习、娱乐使用，禁止恶意损坏、摔落、浸泡液体、重压弯折设备。</li>
+                    <li>禁止私自刷机、破解权限、修改系统文件、安装病毒及违规软件。</li>
+                    <li>禁止浏览、传播违法违规、色情暴力等不良网络内容，违规后果由使用者自行承担。</li>
+                    <li>使用过程中请妥善保管设备，避免磕碰、刮花屏幕及机身。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="notice-item">
+            <div class="notice-header" onclick="toggleNotice(this)">
+                <span>二、损坏与丢失赔偿规则</span>
+                <span class="icon">▼</span>
+            </div>
+            <div class="notice-content">
+                <ul>
+                    <li>人为造成屏幕碎裂、机身损坏、进水故障等问题，需承担全部维修费用。</li>
+                    <li>设备整体丢失、严重损毁无法修复，需按设备市场价全额赔付。</li>
+                    <li>配套充电器、数据线、保护壳等配件损坏或丢失，需按配件单价赔偿。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="notice-item">
+            <div class="notice-header" onclick="toggleNotice(this)">
+                <span>三、设备归还规则</span>
+                <span class="icon">▼</span>
+            </div>
+            <div class="notice-content">
+                <ul>
+                    <li>请按照约定租借时长按时归还设备，超时使用将持续正常计费。</li>
+                    <li>归还时需保证设备、全套配件完好无损，由工作人员现场核验确认。</li>
+                    <li>归还前可自行清理个人缓存数据，租借方不保留用户私人使用数据。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tip">
+            温馨提示：领取平板电脑即代表您已完整阅读、理解并自愿遵守以上全部租借须知条款。
+        </div>
+
+        <!-- 管理员面板 -->
+        <div class="admin-panel" id="adminPanel">
+            <h3>管理员控制台</h3>
+            <div class="admin-btns">
+                <button class="btn-start" onclick="adminStart()">开始计时</button>
+                <button class="btn-pause" onclick="adminPause()">暂停计时</button>
+                <button class="btn-reset" onclick="adminReset()">重置计时</button>
+                <button class="btn-close" onclick="toggleAdminPanel(false)">退出</button>
+            </div>
+            <div class="admin-tip">数据自动保存在本地浏览器，刷新页面不丢失。</div>
+        </div>
+
+        <!-- 管理员入口 -->
+        <div class="admin-entry">
+            <button onclick="showPwdMask()">管理员入口</button>
+        </div>
+    </div>
+
+    <!-- 密码弹窗 -->
+    <div class="pwd-mask" id="pwdMask">
+        <div class="pwd-box">
+            <h4>管理员验证</h4>
+            <input type="password" id="pwdInput" placeholder="请输入管理员密码" onkeydown="if(event.key==='Enter')checkPwd()">
+            <div class="pwd-err" id="pwdErr"></div>
+            <div class="pwd-btns">
+                <button onclick="hidePwdMask()">取消</button>
+                <button onclick="checkPwd()" style="background:#409eff;color:#fff;">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== 状态管理 =====
+        const ADMIN_PASSWORD = '8888';
+        const LS_ACCUM = 'tabletRent_accumulated';
+        const LS_RUNNING = 'tabletRent_running';
+        const LS_START = 'tabletRent_startTime';
+
+        let accumulated = parseInt(localStorage.getItem(LS_ACCUM) || '0', 10);
+        let running = localStorage.getItem(LS_RUNNING) === 'true';
+        let startTime = parseInt(localStorage.getItem(LS_START) || '0', 10);
+        let timerId = null;
+
+        // ===== 计时核心 =====
+        function getCurrentSeconds() {
+            if (running) {
+                return accumulated + Math.floor((Date.now() - startTime) / 1000);
+            }
+            return accumulated;
+        }
+
+        function formatTime(sec) {
+            const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+            const m = String(Math.floor((sec % 3600) / 60)).padStart(2, '0');
+            const s = String(sec % 60).padStart(2, '0');
+            return `${h}:${m}:${s}`;
+        }
+
+        function calcCost(sec) {
+            const hours = sec / 3600;
+            // 不足1小时按1小时
+            const billedHours = Math.ceil(hours);
+            let price = billedHours * 0.5;
+            if (price > 2) price = 2;
+            return price;
+        }
+
+        function render() {
+            const sec = getCurrentSeconds();
+            document.getElementById('timerDisplay').textContent = formatTime(sec);
+            document.getElementById('costDisplay').textContent = calcCost(sec).toFixed(2);
+
+            const statusEl = document.getElementById('timerStatus');
+            if (running) {
+                statusEl.textContent = '使用中';
+                statusEl.className = 'timer-status running';
+            } else {
+                statusEl.textContent = accumulated > 0 ? '已暂停' : '待开始';
+                statusEl.className = 'timer-status paused';
+            }
+        }
+
+        function tick() {
+            render();
+        }
+
+        function startLoop() {
+            stopLoop();
+            timerId = setInterval(tick, 1000);
+        }
+
+        function stopLoop() {
+            if (timerId) {
+                clearInterval(timerId);
+                timerId = null;
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(LS_ACCUM, accumulated);
+            localStorage.setItem(LS_RUNNING, running);
+            localStorage.setItem(LS_START, startTime);
+        }
+
+        // ===== 管理员操作 =====
+        function adminStart() {
+            if (running) return;
+            running = true;
+            startTime = Date.now();
+            saveState();
+            render();
+        }
+
+        function adminPause() {
+            if (!running) return;
+            accumulated += Math.floor((Date.now() - startTime) / 1000);
+            running = false;
+            startTime = 0;
+            saveState();
+            render();
+        }
+
+        function adminReset() {
+            if (!confirm('确定要重置计时吗？本次计时数据将清零。')) return;
+            accumulated = 0;
+            running = false;
+            startTime = 0;
+            saveState();
+            render();
+        }
+
+        // ===== 折叠条款 =====
+        function toggleNotice(el) {
+            const content = el.nextElementSibling;
+            const icon = el.querySelector('.icon');
+            content.classList.toggle('show');
+            icon.textContent = content.classList.contains('show') ? '▲' : '▼';
+        }
+
+        // ===== 管理员面板与密码 =====
+        function showPwdMask() {
+            document.getElementById('pwdMask').classList.add('show');
+            document.getElementById('pwdInput').value = '';
+            document.getElementById('pwdErr').textContent = '';
+            document.getElementById('pwdInput').focus();
+        }
+
+        function hidePwdMask() {
+            document.getElementById('pwdMask').classList.remove('show');
+        }
+
+        function checkPwd() {
+            const val = document.getElementById('pwdInput').value;
+            if (val === ADMIN_PASSWORD) {
+                hidePwdMask();
+                toggleAdminPanel(true);
+            } else {
+                document.getElementById('pwdErr').textContent = '密码错误，请重试';
+            }
+        }
+
+        function toggleAdminPanel(show) {
+            document.getElementById('adminPanel').classList.toggle('show', show);
+        }
+
+        // ===== 初始化 =====
+        window.addEventListener('load', function() {
+            render();
+            startLoop();
+            // 默认展开第一条
+            document.querySelector('.notice-header').click();
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (running) {
+                // 关闭页面前自动保存当前累积时间
+                accumulated = getCurrentSeconds();
+                saveState();
+            }
+        });
+    </script>
+</body>
+</html>
