@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>瓶葡集团 · 焕新 · 浮越科技</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%237b4bd8'/%3E%3Cstop offset='1' stop-color='%2338e0b0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230d1020'/%3E%3Cpath d='M18 46V18h14a11 11 0 0 1 0 22H26' fill='none' stroke='url(%23g)' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+  :root{
+    --ink:#eef6ff;
+    --muted:#a9bcd2;
+    --card:rgba(12,20,28,.6);
+    --line:rgba(255,255,255,.12);
+    --v-acc:#a58bff;
+    --t-acc:#3ce0c0;
+    --font:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Noto Sans SC","Segoe UI",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family:var(--font);background:#070a12;color:var(--ink);
+    min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  button{font-family:var(--font);cursor:pointer;border:none;background:none;color:inherit}
+  img{display:block;max-width:100%}
+
+  .stage{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:clamp(24px,6vw,64px) clamp(18px,5vw,40px);overflow:hidden}
+
+  /* ===== background layers ===== */
+  .bg{position:absolute;inset:0;transition:opacity 1.3s ease}
+  .bg-legacy{background:radial-gradient(120% 95% at 50% 0%,#2c1a5e 0%,#171036 55%,#0a0a18 100%)}
+  .bg-future{background:radial-gradient(130% 95% at 50% 0%,#0a3b4a 0%,#08222e 55%,#07131a 100%);opacity:0}
+  .grid{position:absolute;inset:0;opacity:.16;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:58px 58px;
+    -webkit-mask-image:radial-gradient(90% 80% at 50% 45%,#000 35%,transparent 100%);
+    mask-image:radial-gradient(90% 80% at 50% 45%,#000 35%,transparent 100%);
+    transition:opacity 1.3s ease}
+  .glow{position:absolute;border-radius:50%;filter:blur(85px);transition:opacity 1.5s ease;pointer-events:none}
+  .glow-v{width:56vmin;height:56vmin;left:6%;top:6%;background:rgba(130,104,255,.34);opacity:1}
+  .glow-t{width:56vmin;height:56vmin;right:4%;bottom:4%;background:rgba(60,224,192,.30);opacity:0}
+  .sweep{position:absolute;top:-15%;bottom:-15%;left:0;width:46%;pointer-events:none;opacity:0;
+    background:linear-gradient(90deg,transparent,rgba(180,170,255,.5) 38%,rgba(90,225,205,.7) 62%,transparent);
+    transform:translateX(-150%) skewX(-12deg)}
+  .grain{position:absolute;inset:0;opacity:.05;pointer-events:none;mix-blend-mode:overlay;z-index:60;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");}
+
+  /* phase switching */
+  [data-phase="future"] .bg-legacy,[data-phase="done"] .bg-legacy{opacity:0}
+  [data-phase="future"] .bg-future,[data-phase="done"] .bg-future{opacity:1}
+  [data-phase="future"] .glow-v,[data-phase="done"] .glow-v{opacity:.35}
+  [data-phase="future"] .glow-t,[data-phase="done"] .glow-t{opacity:1}
+  [data-phase="future"] .sweep{animation:sweep 1.6s ease forwards}
+  @keyframes sweep{0%{opacity:0;transform:translateX(-160%) skewX(-12deg)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateX(360%) skewX(-12deg)}}
+
+  /* ===== top bar ===== */
+  .topbar{position:absolute;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:clamp(16px,3vw,30px) clamp(16px,4vw,44px)}
+  .badge{font-size:12px;letter-spacing:.2em;color:var(--muted);display:flex;align-items:center;gap:10px}
+  .badge::before{content:"";width:24px;height:1px;background:var(--muted);opacity:.6}
+  .badge b{color:var(--ink);font-weight:600}
+  .controls{display:flex;gap:8px}
+  .ctl{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--ink);transition:background .2s,transform .15s}
+  .ctl:hover{background:rgba(255,255,255,.16)}
+  .ctl:active{transform:scale(.94)}
+  .ctl svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .progress{position:absolute;top:0;left:0;height:3px;width:0%;background:linear-gradient(90deg,var(--v-acc),var(--t-acc));z-index:50;transition:width .05s linear}
+
+  /* ===== scene container ===== */
+  .scene{position:relative;z-index:20;width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;text-align:center;transition:opacity .7s ease}
+  .scene.legacy{display:flex}
+  .scene.future{position:absolute;inset:0;margin:auto;max-width:900px;opacity:0;pointer-events:none}
+  [data-phase="future"] .scene.legacy,[data-phase="done"] .scene.legacy{opacity:0;pointer-events:none;position:absolute}
+  [data-phase="future"] .scene.future,[data-phase="done"] .scene.future{opacity:1;pointer-events:auto;position:relative}
+
+  .stage-label{display:flex;align-items:center;gap:12px;font-size:clamp(12px,1.6vw,15px);letter-spacing:.26em;color:var(--muted);margin-bottom:clamp(20px,4vh,40px)}
+  .stage-label::before,.stage-label::after{content:"";height:1px;width:clamp(28px,6vw,64px);background:currentColor;opacity:.45}
+
+  /* ===== legacy scene ===== */
+  .legacy-emblem{background:#fff;border-radius:20px;padding:clamp(14px,3vw,26px);box-shadow:0 30px 70px rgba(0,0,0,.45);width:min(76%,340px)}
+  .legacy-emblem img{width:100%;height:auto}
+  .legacy-name{margin-top:clamp(16px,3.5vh,24px);font-size:clamp(20px,4.4vw,32px);font-weight:800;letter-spacing:.04em}
+  .legacy-en{margin-top:6px;font-size:clamp(11px,1.7vw,14px);letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+  .checking{display:flex;align-items:center;gap:10px;margin-top:clamp(22px,5vh,34px);color:var(--muted);font-size:clamp(13px,2vw,15px)}
+  .checking .spin{width:19px;height:19px;border-radius:50%;border:2.5px solid rgba(255,255,255,.2);border-top-color:var(--v-acc);animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .legacy-ver{margin-top:clamp(16px,4vh,26px);font-size:12px;color:var(--muted);letter-spacing:.06em}
+  .legacy-ver b{color:var(--v-acc);font-weight:600}
+
+  .legacy .anim{opacity:0}
+  [data-phase="legacy"] .legacy .legacy-emblem{animation:rise .9s cubic-bezier(.22,1,.36,1) both}
+  [data-phase="legacy"] .legacy .legacy-name{animation:rise .9s cubic-bezier(.22,1,.36,1) .2s both}
+  [data-phase="legacy"] .legacy .legacy-en{animation:rise .9s cubic-bezier(.22,1,.36,1) .32s both}
+  [data-phase="legacy"] .legacy .checking{animation:rise .9s cubic-bezier(.22,1,.36,1) .5s both}
+  [data-phase="legacy"] .legacy .legacy-ver{animation:rise .9s cubic-bezier(.22,1,.36,1) .7s both}
+
+  /* ===== future scene ===== */
+  .future{justify-content:center;padding:clamp(20px,5vw,40px)}
+  .fuyue-emblem{background:#fff;border-radius:20px;padding:clamp(14px,3vw,26px);box-shadow:0 30px 70px rgba(0,0,0,.45);width:min(76%,340px)}
+  .fuyue-emblem img{width:100%;height:auto}
+  .hero-brand{margin-top:clamp(16px,3.5vh,26px);font-size:clamp(22px,6vw,40px);font-weight:800;letter-spacing:.08em}
+  .hero-sub{margin-top:6px;font-size:clamp(11px,1.8vw,14px);letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+
+  .panel{
+    margin-top:clamp(22px,5vh,38px);width:100%;max-width:600px;text-align:left;
+    background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(18px,4.5vw,26px);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  }
+  .panel-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--line);gap:12px}
+  .panel-head .t{font-size:clamp(13px,2vw,15px);font-weight:600}
+  .panel-head .badge-mini{font-size:10px;font-weight:700;color:#08140f;background:linear-gradient(90deg,var(--t-acc),#7df0ff);padding:3px 9px;border-radius:999px;letter-spacing:.04em}
+  .panel-head .right{font-size:11px;color:var(--muted);letter-spacing:.08em;white-space:nowrap}
+
+  .up-list{margin-top:16px;display:flex;flex-direction:column;gap:14px}
+  .up-row{display:flex;gap:12px;align-items:flex-start}
+  .up-ico{flex:none;width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:rgba(92,232,200,.14);color:var(--t-acc)}
+  .up-ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  .up-body{min-width:0}
+  .up-body b{display:block;font-size:clamp(14px,2.2vw,16px);font-weight:600}
+  .up-body p{font-size:clamp(12.5px,2vw,14px);color:var(--muted);line-height:1.6;margin-top:2px}
+  .up-body .hl{color:var(--ink)}
+
+  .future .anim{opacity:0}
+  [data-phase="future"] .future .fuyue-emblem{animation:rise .9s cubic-bezier(.22,1,.36,1) .1s both}
+  [data-phase="future"] .future .hero-brand{animation:rise .9s cubic-bezier(.22,1,.36,1) .28s both}
+  [data-phase="future"] .future .hero-sub{animation:rise .9s cubic-bezier(.22,1,.36,1) .4s both}
+  [data-phase="future"] .future .panel{animation:panelUp .95s cubic-bezier(.22,1,.36,1) .6s both}
+
+  /* ===== actions ===== */
+  .panel-actions{margin-top:18px;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+  .install{
+    position:relative;width:100%;padding:15px 0;border-radius:15px;overflow:hidden;
+    font-size:clamp(15px,2.4vw,16px);font-weight:700;letter-spacing:.1em;color:#06140f;
+    background:linear-gradient(90deg,var(--t-acc),#7df0ff);
+    box-shadow:0 12px 30px rgba(60,225,190,.32);transition:transform .15s,filter .2s;
+  }
+  .install:hover{filter:brightness(1.05)}
+  .install:active{transform:scale(.98)}
+  .install .bar{position:absolute;left:0;top:0;bottom:0;width:0%;background:rgba(6,20,15,.25);transition:width .1s linear}
+  .install .lbl{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:8px}
+  .install .pct{font-variant-numeric:tabular-nums}
+  .install.downloading{pointer-events:none}
+  .done-hint{font-size:12px;color:var(--muted);text-align:center;letter-spacing:.04em}
+
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  @keyframes panelUp{from{opacity:0;transform:translateY(32px) scale(.98)}to{opacity:1;transform:none}}
+
+  /* ===== responsive ===== */
+  @media (max-width:600px){
+    .stage{padding-top:clamp(96px,26vw,120px);align-items:flex-start}
+    .scene.legacy,.scene.future{padding-top:6vh}
+    .topbar .badge{font-size:11px;letter-spacing:.12em}
+    .badge b{white-space:normal}
+    .panel{padding:16px}
+    .up-row{flex-wrap:wrap}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .stage *{animation:none !important;transition:none !important}
+    .checking .spin{border-top-color:var(--v-acc)}
+    .progress{display:none}
+  }
+</style>
+</head>
+<body data-phase="legacy">
+
+<div class="stage" id="stage">
+  <div class="bg bg-legacy"></div>
+  <div class="bg bg-future"></div>
+  <div class="grid"></div>
+  <div class="glow glow-v"></div>
+  <div class="glow glow-t"></div>
+  <div class="sweep"></div>
+  <div class="grain"></div>
+
+  <div class="progress" id="progress"></div>
+  <header class="topbar">
+    <div class="badge">企业焕新 · <b>BRAND EVOLUTION</b></div>
+    <div class="controls">
+      <button class="ctl" id="btnPause" aria-label="暂停 / 播放" title="暂停 / 播放">
+        <svg id="icoPause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor" stroke="none"/></svg>
+        <svg id="icoPlay" viewBox="0 0 24 24" style="display:none"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="ctl" id="btnReplay" aria-label="重播" title="重播">
+        <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- SCENE 1 · 检测焕新 · 瓶葡 -->
+  <section class="scene legacy" aria-label="瓶葡集团 检测焕新">
+    <div class="stage-label">01 · 过去 · THE LEGACY</div>
+    <div class="legacy-emblem"><img src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/MxggbZrhfoPReWxKwQCcwoj2nhd" alt="瓶葡集团有限公司 logo"></div>
+    <div class="legacy-name">瓶葡集团有限公司</div>
+    <div class="legacy-en">PINGPU GROUP · CO., LTD.</div>
+    <div class="checking"><span class="spin"></span><span>正在焕新升级…</span></div>
+    <div class="legacy-ver">行业方向 · <b>产品制造</b> · 实体生产 · 深耕制造</div>
+  </section>
+
+  <!-- SCENE 2 · 焕新 · 浮越 -->
+  <section class="scene future" aria-label="浮越科技 网络科技">
+    <div class="stage-label">02 · 现在 · THE FUTURE</div>
+    <div class="fuyue-emblem"><img src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FOYybq1rmoEk5dxH6EJcxvvCnHf" alt="浮越科技有限公司 logo"></div>
+    <div class="hero-brand">浮越科技有限公司</div>
+    <div class="hero-sub">FUYUE TECHNOLOGY · 网络科技</div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="t">焕新说明</span>
+        <span style="display:flex;gap:10px;align-items:center"><span class="badge-mini">升级</span><span class="right">网络科技 2.0</span></span>
+      </div>
+      <div class="up-list">
+        <div class="up-row">
+          <span class="up-ico"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span>
+          <div class="up-body"><b>行业焕新</b><p>从<span class="hl">产品制造</span>全面迈向<span class="hl">网络科技</span>，完成产业转身。</p></div>
+        </div>
+        <div class="up-row">
+          <span class="up-ico"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M8 8h5M8 16h6"/></svg></span>
+          <div class="up-body"><b>数字服务</b><p>全新数字化业务布局，以技术服务连接更广阔的市场。</p></div>
+        </div>
+        <div class="up-row">
+          <span class="up-ico"><svg viewBox="0 0 24 24"><path d="M13 3 4 14h6l-1 7 9-11h-6z"/></svg></span>
+          <div class="up-body"><b>智能互联</b><p>更懂未来的技术引擎，浮越而上，驶向数字蓝海。</p></div>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="install" id="installBtn">
+          <span class="bar" id="installBar"></span>
+          <span class="lbl" id="installLbl">
+            <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
+            <span id="installText">进入浮越</span>
+          </span>
+        </button>
+        <span class="done-hint" id="doneHint" style="display:none">焕新完成 · 正在进入浮越科技…</span>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var body=document.body;
+  var progress=document.getElementById('progress');
+  var icoPause=document.getElementById('icoPause');
+  var icoPlay=document.getElementById('icoPlay');
+  var installBtn=document.getElementById('installBtn');
+  var installBar=document.getElementById('installBar');
+  var installLbl=document.getElementById('installLbl');
+  var doneHint=document.getElementById('doneHint');
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // master timeline: legacy(checking) -> future(update)
+  var PHASES=[{t:0,cls:'legacy'},{t:4.2,cls:'future'}];
+  var t=0,last=null,playing=true,running=true;
+  var TO_FUTURE=3400, switchTimer=null, upgrading=false;
+
+  function setPhase(cls){ body.setAttribute('data-phase', cls); }
+  function syncPhase(){
+    var active='legacy';
+    if(t>=4.2) active='future';
+    setPhase(active);
+  }
+  function setPaused(p){
+    icoPause.style.display=p?'none':'';
+    icoPlay.style.display=p?'':'none';
+  }
+  function frame(now){
+    if(!running) return;
+    if(!playing){ last=null; requestAnimationFrame(frame); return; }
+    if(last==null) last=now;
+    var dt=Math.min((now-last)/1000,0.05); last=now;
+    t+=dt;
+    if(t>9) t=9;
+    progress.style.width=Math.min(100,t/9*100)+'%';
+    syncPhase();
+    requestAnimationFrame(frame);
+  }
+  function reset(){
+    clearTimeout(switchTimer);
+    t=0;last=null;running=true;playing=true;upgrading=false;
+    setPaused(false);
+    installBtn.classList.remove('downloading');
+    installBar.style.width='0%';
+    installLbl.innerHTML='<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg><span id="installText">进入浮越</span>';
+    doneHint.style.display='none';
+    setPhase('legacy');
+    requestAnimationFrame(function(){ requestAnimationFrame(frame); });
+  }
+
+  document.getElementById('btnPause').addEventListener('click', function(){
+    if(reduced) return;
+    playing=!playing; setPaused(!playing);
+    if(playing && !running){ running=true; requestAnimationFrame(frame); }
+    if(playing) last=null;
+  });
+  document.getElementById('btnReplay').addEventListener('click', reset);
+
+  // enter fuyue -> upgrade progress -> jump
+  function doUpgrade(){
+    if(upgrading) return; upgrading=true;
+    installBtn.classList.add('downloading');
+    installLbl.innerHTML='<span style="width:18px;height:18px;border-radius:50%;border:2.5px solid rgba(6,20,15,.3);border-top-color:#06140f;display:inline-block;animation:spin .8s linear infinite"></span><span id="installText">正在升级 0%</span>';
+    var pct=0,last2=null;
+    function step(now){
+      if(last2==null) last2=now;
+      pct=Math.min(100, pct+(now-last2)/1000*34); last2=now;
+      installBar.style.width=pct+'%';
+      var el=document.getElementById('installText');
+      if(el) el.textContent='正在升级 '+Math.floor(pct)+'%';
+      if(pct<100){ requestAnimationFrame(step); }
+      else{
+        if(el) el.textContent='升级完成';
+        doneHint.style.display='block';
+        setTimeout(function(){ window.open('https://fuyueweb.pages.dev','_blank','noopener'); },700);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  installBtn.addEventListener('click', function(){
+    if(body.getAttribute('data-phase')==='future') doUpgrade();
+  });
+
+  // start
+  if(reduced){ setPhase('future'); progress.style.width='100%'; }
+  else{ setPhase('legacy'); requestAnimationFrame(frame); }
+})();
+</script>
+</body>
+</html>
